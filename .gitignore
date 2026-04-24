@@ -1,0 +1,22 @@
+# Design & development files
+*.af
+*.af~lock~
+DESIGN-figma.md
+Matt's website-handoff.zip
+Webpage design Screenshot.png
+NOTES.md
+
+# Unused images
+Matt-kitchen-photo.jpg
+Matt-kitchen-regen.png
+Matt-photo-1.jpg
+Matt-photo-van.png
+Builder-and-van-generated.png
+
+# Development folders
+demos/
+matt-s-website/
+
+# System files
+.DS_Store
+*.log
