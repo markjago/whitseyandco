@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Services — Whitsey &amp; Co.</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300..600&family=Geist:wght@300..700&family=Geist+Mono:wght@400..600&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ============================================================
+       Design Tokens (shared with index.html)
+    ============================================================ */
+    :root {
+      --bone:        oklch(0.975 0.006 80);
+      --bone-2:      oklch(0.955 0.008 75);
+      --bone-3:      oklch(0.925 0.010 75);
+      --ink:         oklch(0.22 0.012 60);
+      --ink-2:       oklch(0.32 0.012 60);
+      --ink-3:       oklch(0.50 0.010 65);
+      --ink-4:       oklch(0.72 0.008 70);
+      --terra:       oklch(0.58 0.09 45);
+      --terra-soft:  oklch(0.92 0.03 50);
+      --glass-light: rgba(252, 250, 246, 0.16);
+
+      --font-display: "Newsreader", "Cormorant Garamond", Georgia, serif;
+      --font-sans:    "Geist", "Inter", system-ui, -apple-system, "Helvetica Neue", sans-serif;
+      --font-mono:    "Geist Mono", "JetBrains Mono", "SF Mono", ui-monospace, monospace;
+
+      --s-1:4px; --s-2:8px; --s-3:12px; --s-4:16px; --s-5:24px;
+      --s-6:32px; --s-7:48px; --s-8:64px; --s-9:96px;
+
+      --r-sm:4px; --r-md:8px; --r-lg:14px; --r-xl:24px; --r-pill:999px;
+
+      --sh-1: 0 1px 2px rgba(28,24,20,0.04), 0 1px 1px rgba(28,24,20,0.03);
+      --sh-2: 0 6px 18px rgba(28,24,20,0.06), 0 2px 4px rgba(28,24,20,0.04);
+      --sh-3: 0 24px 60px rgba(28,24,20,0.12), 0 6px 12px rgba(28,24,20,0.06);
+
+      --container-wide: 1440px;
+      --gutter: clamp(20px, 4vw, 48px);
+    }
+
+    /* ============================================================
+       Reset & base
+    ============================================================ */
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body {
+      margin: 0; padding: 0;
+      background: var(--bone); color: var(--ink);
+      font-family: var(--font-sans);
+      font-feature-settings: "kern", "ss01", "cv11";
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
+    }
+    body { font-size: 16px; line-height: 1.5; letter-spacing: -0.01em; }
+    img { display: block; max-width: 100%; background: var(--bone-3); }
+    button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+    a { color: inherit; text-decoration: none; }
+    html { scroll-behavior: smooth; }
+
+    /* ============================================================
+       Typography
+    ============================================================ */
+    .mono-label {
+      font-family: var(--font-mono); font-weight: 500;
+      font-size: 12px; line-height: 1.2; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--ink-2);
+    }
+    .mono-label-lg {
+      font-family: var(--font-mono); font-weight: 500;
+      font-size: 13px; line-height: 1.3; letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--ink-2);
+    }
+
+    /* ============================================================
+       Buttons
+    ============================================================ */
+    .btn {
+      display: inline-flex; align-items: center; gap: 10px;
+      padding: 14px 24px; border-radius: var(--r-pill);
+      font-family: var(--font-sans); font-weight: 500;
+      font-size: 15px; letter-spacing: -0.005em;
+      transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+      white-space: nowrap; line-height: 1;
+    }
+    .btn:focus-visible { outline: 1.5px dashed var(--ink); outline-offset: 3px; }
+    .btn:hover { transform: translateY(-1px); }
+    .btn:active { transform: translateY(0); }
+    .btn--ink { background: var(--ink); color: var(--bone); }
+    .btn--ink:hover { background: #000; }
+    .btn--bone { background: var(--bone); color: var(--ink); box-shadow: var(--sh-2); }
+    .btn--bone:hover { background: #fff; }
+    .btn--glass-light {
+      background: var(--glass-light); color: var(--bone);
+      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.25);
+    }
+    .btn--glass-light:hover { background: rgba(255,255,255,0.28); }
+    .btn--sm { padding: 10px 16px; font-size: 13px; }
+    .btn--lg { padding: 18px 28px; font-size: 16px; }
+
+    /* ============================================================
+       Icons
+    ============================================================ */
+    .icon {
+      display: inline-block; flex-shrink: 0;
+      stroke: currentColor; fill: none;
+      stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+      vertical-align: -0.125em;
+    }
+    .btn .icon { width: 16px; height: 16px; transition: transform 0.2s ease; }
+    .btn:hover .icon[data-arrow] { transform: translateX(2px); }
+
+    /* ============================================================
+       Layout
+    ============================================================ */
+    .container-wide { max-width: var(--container-wide); margin: 0 auto; padding: 0 var(--gutter); }
+    .section-marker { display: inline-flex; align-items: center; gap: 10px; }
+    .section-marker::before {
+      content: ""; width: 6px; height: 6px; border-radius: 50%;
+      background: var(--terra); display: inline-block;
+    }
+
+    /* ============================================================
+       Navigation
+    ============================================================ */
+    .nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      padding: 18px 0;
+      transition: background 0.3s ease, backdrop-filter 0.3s ease, padding 0.3s ease;
+    }
+    /* Services nav starts on-light (no hero photo behind it) */
+    .nav { background: rgba(249,246,241,0.88); backdrop-filter: blur(16px) saturate(140%); -webkit-backdrop-filter: blur(16px) saturate(140%); border-bottom: 1px solid rgba(28,24,20,0.06); }
+    .nav--scrolled { padding: 12px 0; }
+    .nav__inner { display: flex; align-items: center; justify-content: space-between; gap: 32px; }
+    .nav__mark { display: inline-flex; align-items: center; gap: 10px; color: var(--ink); transition: color 0.3s ease; }
+    .nav__mark-glyph { width: 30px; height: 30px; border: 1px solid currentColor; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; }
+    .nav__mark-word { font-family: var(--font-display); font-weight: 440; font-size: 18px; letter-spacing: -0.015em; }
+    .nav__mark-amp { font-style: italic; font-weight: 400; margin: 0 2px; }
+    .nav__links { display: flex; gap: 32px; list-style: none; margin: 0; padding: 0; }
+    .nav__links a { font-family: var(--font-sans); font-size: 15px; font-weight: 440; letter-spacing: -0.008em; color: var(--ink-2); opacity: 0.85; transition: opacity 0.2s ease, color 0.3s ease; }
+    .nav__links a:hover { opacity: 1; color: var(--ink); }
+    .nav__links a[aria-current="page"] { color: var(--ink); opacity: 1; }
+    .nav__cta { display: flex; align-items: center; gap: 20px; }
+    .nav__phone { display: inline-flex; align-items: center; gap: 8px; color: var(--ink-2); opacity: 0.85; }
+    .nav__phone-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--terra); box-shadow: 0 0 0 4px rgba(196,116,74,0.2); }
+    @media (max-width: 960px) { .nav__phone { display: none; } }
+    /* Hamburger button */
+    .nav__burger {
+      display: none;
+      flex-direction: column; justify-content: center; align-items: center;
+      gap: 5px; width: 40px; height: 40px;
+      background: none; border: none; cursor: pointer; padding: 4px;
+      color: var(--ink); transition: color 0.3s ease;
+    }
+    .nav__burger span {
+      display: block; width: 22px; height: 2px;
+      background: currentColor; border-radius: 2px;
+      transition: transform 0.25s ease, opacity 0.2s ease, width 0.25s ease;
+      transform-origin: center;
+    }
+    .nav--open .nav__burger span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .nav--open .nav__burger span:nth-child(2) { opacity: 0; width: 0; }
+    .nav--open .nav__burger span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+    /* Mobile drawer */
+    .nav__drawer {
+      display: none;
+      position: fixed; inset: 0; top: 0; z-index: 90;
+      padding-top: 72px;
+      background: var(--ink);
+      flex-direction: column;
+      animation: drawerIn 0.25s cubic-bezier(0.16,1,0.3,1) forwards;
+    }
+    @keyframes drawerIn {
+      from { opacity: 0; transform: translateY(-8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .nav--open .nav__drawer { display: flex; }
+    .nav__drawer ul {
+      list-style: none; margin: 0; padding: 32px var(--gutter);
+      display: flex; flex-direction: column; gap: 4px;
+    }
+    .nav__drawer ul a {
+      display: block; font-family: var(--font-display);
+      font-size: clamp(32px, 8vw, 48px); font-weight: 380;
+      color: var(--bone); opacity: 0.9; letter-spacing: -0.02em;
+      line-height: 1.2; transition: opacity 0.15s ease;
+    }
+    .nav__drawer ul a:hover { opacity: 1; }
+    .nav__drawer ul a[aria-current="page"] { color: var(--terra); opacity: 1; }
+    .nav__drawer-close {
+      position: absolute; top: 18px; right: var(--gutter);
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 40px; height: 40px;
+      background: none; border: none; border-radius: 50%;
+      color: var(--bone); opacity: 0.6; cursor: pointer;
+      transition: opacity 0.15s ease;
+    }
+    .nav__drawer-close:hover { opacity: 1; }
+    .nav__drawer-cta {
+      padding: 0 var(--gutter) 40px;
+      margin-top: auto;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      padding-top: 28px;
+    }
+    .nav__drawer-cta a { display: inline-flex; }
+    @media (max-width: 640px) {
+      .nav__links { display: none; }
+      .nav__burger { display: flex; }
+      .nav__cta .btn { display: none; }
+    }
+
+    /* ============================================================
+       Services hero
+    ============================================================ */
+    .sv-hero {
+      position: relative;
+      padding: 200px 0 clamp(80px, 12vw, 140px);
+      background: var(--bone); overflow: hidden;
+    }
+    .sv-hero__inner {
+      display: grid; grid-template-columns: 7fr 5fr;
+      gap: clamp(40px, 6vw, 96px); align-items: end;
+    }
+    .sv-hero__kicker {
+      display: inline-flex; align-items: center; gap: 12px;
+      margin-bottom: 32px; color: var(--ink-2);
+    }
+    .sv-hero__kicker::before {
+      content: ""; width: 6px; height: 6px; border-radius: 50%;
+      background: var(--terra);
+    }
+    .sv-hero__title {
+      font-family: var(--font-display); font-weight: 360;
+      font-size: clamp(52px, 8vw, 112px); line-height: 0.96;
+      letter-spacing: -0.03em; margin: 0 0 24px;
+      max-width: 14ch; text-wrap: balance;
+    }
+    .sv-hero__title em { font-style: italic; font-weight: 340; }
+    .sv-hero__lede {
+      font-family: var(--font-sans); font-weight: 380;
+      font-size: 20px; line-height: 1.55; letter-spacing: -0.012em;
+      color: var(--ink-2); max-width: 46ch;
+    }
+    .sv-hero__meta {
+      padding-left: 0; display: flex; flex-direction: column; gap: 20px;
+    }
+    .sv-hero__meta-row {
+      display: grid; grid-template-columns: 110px 1fr; gap: 16px;
+      padding: 14px 0; border-top: 1px solid rgba(28,24,20,0.12);
+      align-items: baseline;
+    }
+    .sv-hero__meta-row:last-child { border-bottom: 1px solid rgba(28,24,20,0.12); }
+    .sv-hero__meta-key {
+      font-family: var(--font-mono); font-size: 11px;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-3);
+    }
+    .sv-hero__meta-val {
+      font-family: var(--font-sans); font-weight: 440; font-size: 15px; color: var(--ink);
+    }
+    @media (max-width: 900px) { .sv-hero__inner { grid-template-columns: 1fr; } }
+
+    /* ============================================================
+       Services grid
+    ============================================================ */
+    .sv-grid-section {
+      padding: clamp(48px, 8vw, 96px) 0 clamp(80px, 12vw, 140px);
+      background: var(--bone); border-top: 1px solid rgba(28,24,20,0.08);
+    }
+    .sv-grid-head {
+      display: flex; justify-content: space-between; align-items: flex-end;
+      gap: 32px; margin-bottom: clamp(40px, 6vw, 72px); flex-wrap: wrap;
+    }
+    .sv-grid-head__title {
+      font-family: var(--font-display); font-weight: 380;
+      font-size: clamp(32px, 4vw, 48px); line-height: 1.05;
+      letter-spacing: -0.025em; margin: 12px 0 0; max-width: 20ch;
+    }
+    .sv-grid-head__title em { font-style: italic; font-weight: 360; }
+    .sv-count {
+      display: flex; align-items: baseline; gap: 10px;
+      font-family: var(--font-mono); font-size: 12px;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-3);
+    }
+    .sv-count__big {
+      font-family: var(--font-display); font-weight: 380;
+      font-size: 56px; line-height: 1; letter-spacing: -0.02em; color: var(--ink);
+    }
+    .sv-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 2px; background: rgba(28,24,20,0.12);
+      border: 1px solid rgba(28,24,20,0.12);
+      border-radius: var(--r-lg); overflow: hidden;
+    }
+    @media (max-width: 960px) { .sv-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 600px) { .sv-grid { grid-template-columns: 1fr; } }
+    .sv-card {
+      background: var(--bone); padding: 0;
+      display: flex; flex-direction: column;
+      transition: background 0.25s ease;
+      position: relative; color: var(--ink);
+    }
+    .sv-card:hover { background: var(--bone-2); }
+    .sv-card:hover .sv-card__img img { transform: scale(1.04); }
+    .sv-card:hover .sv-card__cta-icon { transform: translate(3px, -3px); opacity: 1; }
+    .sv-card__img {
+      aspect-ratio: 4/3; overflow: hidden;
+      background: var(--bone-3); position: relative;
+    }
+    .sv-card__img img {
+      width: 100%; height: 100%; object-fit: cover;
+      transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+    .sv-card__num {
+      position: absolute; top: 14px; left: 14px;
+      font-family: var(--font-mono); font-size: 11px;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--bone); background: rgba(28,24,20,0.5);
+      backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+      padding: 5px 10px; border-radius: var(--r-sm);
+    }
+    .sv-card__body {
+      padding: 28px; display: flex; flex-direction: column; gap: 14px; flex: 1;
+    }
+    .sv-card__icon {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: var(--bone-3);
+      display: inline-flex; align-items: center; justify-content: center; color: var(--ink);
+    }
+    .sv-card__icon .icon { width: 18px; height: 18px; stroke-width: 1.5; }
+    .sv-card__title {
+      font-family: var(--font-display); font-weight: 420;
+      font-size: 28px; line-height: 1.1; letter-spacing: -0.02em;
+      margin: 0; color: var(--ink);
+    }
+    .sv-card__title em { font-style: italic; font-weight: 380; }
+    .sv-card__desc {
+      font-family: var(--font-sans); font-weight: 400;
+      font-size: 15px; line-height: 1.55; letter-spacing: -0.008em;
+      color: var(--ink-2); margin: 0;
+    }
+    .sv-card__bullets {
+      list-style: none; padding: 0; margin: 4px 0 0;
+      display: flex; flex-direction: column; gap: 6px;
+    }
+    .sv-card__bullets li {
+      font-family: var(--font-mono); font-size: 11px;
+      letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-3);
+      display: flex; align-items: center; gap: 10px;
+    }
+    .sv-card__bullets li::before {
+      content: ""; width: 12px; height: 1px;
+      background: var(--ink-4); display: inline-block;
+    }
+    .sv-card__foot {
+      margin-top: auto; padding-top: 20px;
+      display: flex; align-items: center; justify-content: space-between;
+      border-top: 1px solid rgba(28,24,20,0.08);
+    }
+    .sv-card__foot-label {
+      font-family: var(--font-mono); font-size: 11px;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-3);
+    }
+    .sv-card__cta-icon {
+      color: var(--ink); opacity: 0.45;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+    .sv-card__cta-icon .icon { width: 18px; height: 18px; stroke-width: 1.75; }
+
+    /* ============================================================
+       Process strip
+    ============================================================ */
+    .sv-process {
+      padding: clamp(80px, 12vw, 140px) 0;
+      background: var(--bone-2);
+      border-top: 1px solid rgba(28,24,20,0.08);
+      border-bottom: 1px solid rgba(28,24,20,0.08);
+    }
+    .sv-process__head { max-width: 56ch; margin-bottom: clamp(48px, 7vw, 72px); }
+    .sv-process__title {
+      font-family: var(--font-display); font-weight: 380;
+      font-size: clamp(36px, 5vw, 56px); line-height: 1.02;
+      letter-spacing: -0.025em; margin: 24px 0 0;
+    }
+    .sv-process__title em { font-style: italic; font-weight: 360; }
+    .sv-process__steps {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      gap: 32px; position: relative;
+    }
+    .sv-process__steps::before {
+      content: ""; position: absolute; top: 20px; left: 0; right: 0;
+      height: 1px; background: rgba(28,24,20,0.12); z-index: 0;
+    }
+    .sv-step { position: relative; z-index: 1; }
+    .sv-step__num {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: var(--bone); border: 1px solid var(--ink);
+      display: inline-flex; align-items: center; justify-content: center;
+      font-family: var(--font-mono); font-size: 13px;
+      letter-spacing: 0.05em; color: var(--ink); margin-bottom: 24px;
+    }
+    .sv-step__title {
+      font-family: var(--font-display); font-weight: 420;
+      font-size: 22px; line-height: 1.2; letter-spacing: -0.018em;
+      margin: 0 0 10px; color: var(--ink);
+    }
+    .sv-step__title em { font-style: italic; font-weight: 380; }
+    .sv-step__desc {
+      font-family: var(--font-sans); font-size: 14px;
+      line-height: 1.55; color: var(--ink-2); margin: 0;
+    }
+    .sv-step__time {
+      display: block; font-family: var(--font-mono); font-size: 11px;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--ink-3); margin-top: 12px;
+    }
+    @media (max-width: 860px) {
+      .sv-process__steps { grid-template-columns: repeat(2, 1fr); row-gap: 48px; }
+      .sv-process__steps::before { display: none; }
+    }
+    @media (max-width: 460px) { .sv-process__steps { grid-template-columns: 1fr; } }
+
+    /* ============================================================
+       CTA banner
+    ============================================================ */
+    .sv-cta {
+      padding: clamp(80px, 12vw, 140px) 0;
+      background: var(--ink); color: var(--bone);
+    }
+    .sv-cta__inner {
+      display: grid; grid-template-columns: 7fr 5fr;
+      gap: clamp(40px, 6vw, 96px); align-items: center;
+    }
+    .sv-cta__title {
+      font-family: var(--font-display); font-weight: 360;
+      font-size: clamp(40px, 5.5vw, 72px); line-height: 1;
+      letter-spacing: -0.028em; margin: 24px 0 0;
+      color: var(--bone); max-width: 16ch; text-wrap: balance;
+    }
+    .sv-cta__title em { font-style: italic; font-weight: 340; color: oklch(0.88 0.04 60); }
+    .sv-cta__dek {
+      font-family: var(--font-sans); font-size: 17px; line-height: 1.55;
+      color: var(--bone-2); opacity: 0.8; max-width: 44ch; margin: 0 0 28px;
+    }
+    .sv-cta__actions { display: flex; flex-wrap: wrap; gap: 12px; }
+    @media (max-width: 820px) { .sv-cta__inner { grid-template-columns: 1fr; } }
+
+    /* ============================================================
+       Footer
+    ============================================================ */
+    .foot { padding: 28px 0; background: var(--ink); }
+    .foot__inner { display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+    .foot__back { border-bottom: 1px solid currentColor; padding-bottom: 2px; }
+  </style>
+</head>
+<body>
+
+  <!-- ── Navigation ── -->
+  <nav class="nav" id="nav" aria-label="Primary">
+    <div class="nav__inner container-wide">
+      <a href="index.html" class="nav__mark" aria-label="Whitsey & Co. — home">
+        <span class="nav__mark-glyph" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M3 11 L12 3 L21 11 L21 21 L14 21 L14 14 L10 14 L10 21 L3 21 Z" stroke-linejoin="round"/>
+          </svg>
+        </span>
+        <span class="nav__mark-word">Whitsey <span class="nav__mark-amp">&amp;</span> Co.</span>
+      </a>
+      <ul class="nav__links">
+        <li><a href="index.html#work">Work</a></li>
+        <li><a href="index.html#about">About</a></li>
+        <li><a href="services.html" aria-current="page" style="color:var(--ink);opacity:1">Services</a></li>
+        <li><a href="index.html#contact">Contact</a></li>
+      </ul>
+      <div class="nav__cta">
+        <span class="nav__phone mono-label">
+          <span class="nav__phone-dot" aria-hidden="true"></span>
+          07XXX XXX XXX
+        </span>
+        <a href="#cta" class="btn btn--ink btn--sm">
+          Get a quote
+          <svg class="icon" viewBox="0 0 24 24" data-arrow aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </a>
+        <button class="nav__burger" id="nav-burger" aria-label="Open menu" aria-expanded="false" aria-controls="nav-drawer">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile drawer -->
+    <div class="nav__drawer" id="nav-drawer" role="dialog" aria-label="Navigation menu">
+      <button class="nav__drawer-close" onclick="closeDrawer()" aria-label="Close menu">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+      <ul>
+        <li><a href="index.html#work"    onclick="closeDrawer()">Work</a></li>
+        <li><a href="index.html#about"   onclick="closeDrawer()">About</a></li>
+        <li><a href="services.html"      onclick="closeDrawer()" aria-current="page">Services</a></li>
+        <li><a href="index.html#contact" onclick="closeDrawer()">Contact</a></li>
+      </ul>
+      <div class="nav__drawer-cta">
+        <a href="index.html#contact" class="btn btn--bone btn--lg" onclick="closeDrawer()">
+          Get a quote
+          <svg class="icon" viewBox="0 0 24 24" data-arrow aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ── Services hero ── -->
+  <header class="sv-hero">
+    <div class="container-wide sv-hero__inner">
+      <div>
+        <span class="sv-hero__kicker mono-label-lg">Services · 2026</span>
+        <h1 class="sv-hero__title">
+          What I <em>actually</em> do, from first fix to final snag.
+        </h1>
+        <p class="sv-hero__lede">
+          I stay honest about scope — I only take on work I know I can do properly.
+          Here's what I do week-in, week-out, working solo on most jobs.
+        </p>
+      </div>
+      <dl class="sv-hero__meta">
+        <div class="sv-hero__meta-row">
+          <dt class="sv-hero__meta-key">Based</dt>
+          <dd class="sv-hero__meta-val">St Ives, Cambridgeshire</dd>
+        </div>
+        <div class="sv-hero__meta-row">
+          <dt class="sv-hero__meta-key">Coverage</dt>
+          <dd class="sv-hero__meta-val">Cambridgeshire</dd>
+        </div>
+        <div class="sv-hero__meta-row">
+          <dt class="sv-hero__meta-key">Crew</dt>
+          <dd class="sv-hero__meta-val">Just Matt</dd>
+        </div>
+        <div class="sv-hero__meta-row">
+          <dt class="sv-hero__meta-key">Certified</dt>
+          <dd class="sv-hero__meta-val">FMB · TrustMark · HETAS · Part-P</dd>
+        </div>
+      </dl>
+    </div>
+  </header>
+
+  <!-- ── Services grid ── -->
+  <section class="sv-grid-section" id="services">
+    <div class="container-wide">
+      <div class="sv-grid-head">
+        <div>
+          <span class="mono-label-lg section-marker">The full list</span>
+          <h2 class="sv-grid-head__title">
+            Ten services under <em>one</em> roof, one crew.
+          </h2>
+        </div>
+        <div class="sv-count">
+          <span class="sv-count__big">10</span>
+          <span>services offered</span>
+        </div>
+      </div>
+
+      <div class="sv-grid" id="sv-grid">
+        <!-- Cards injected by JS -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ── How we work ── -->
+  <section class="sv-process" id="process">
+    <div class="container-wide">
+      <div class="sv-process__head">
+        <span class="mono-label-lg section-marker">How we work</span>
+        <h2 class="sv-process__title">
+          Four steps, in the same order, <em>every</em> time.
+        </h2>
+      </div>
+      <div class="sv-process__steps">
+        <div class="sv-step">
+          <div class="sv-step__num">01</div>
+          <h3 class="sv-step__title">Site <em>visit</em></h3>
+          <p class="sv-step__desc">I come out, walk the space with you, and take honest notes. No pressure, no sales patter.</p>
+          <span class="sv-step__time">Within 1 week</span>
+        </div>
+        <div class="sv-step">
+          <div class="sv-step__num">02</div>
+          <h3 class="sv-step__title">Scope &amp; <em>quote</em></h3>
+          <p class="sv-step__desc">Written quote with phases, rough timeline, and honest scope — what's included and what isn't.</p>
+          <span class="sv-step__time">Within 2 weeks</span>
+        </div>
+        <div class="sv-step">
+          <div class="sv-step__num">03</div>
+          <h3 class="sv-step__title">Plan &amp; <em>book in</em></h3>
+          <p class="sv-step__desc">We firm up the programme, order the long-lead items, and agree start dates together.</p>
+          <span class="sv-step__time">4–8 weeks ahead</span>
+        </div>
+        <div class="sv-step">
+          <div class="sv-step__num">04</div>
+          <h3 class="sv-step__title">Build &amp; <em>snag</em></h3>
+          <p class="sv-step__desc">Daily clean site, weekly check-in, proper snagging at handover. No loose ends.</p>
+          <span class="sv-step__time">On programme</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── CTA strip ── -->
+  <section class="sv-cta" id="cta">
+    <div class="container-wide sv-cta__inner">
+      <div>
+        <span class="mono-label-lg section-marker" style="color:var(--bone-2)">Ready to chat?</span>
+        <h2 class="sv-cta__title">
+          Got a project in mind? <em>Ring us first.</em>
+        </h2>
+      </div>
+      <div>
+        <p class="sv-cta__dek">
+          We'll come out, walk the space, and tell you honestly whether we're
+          the right firm — usually within a week of your call.
+        </p>
+        <div class="sv-cta__actions">
+          <a href="tel:+4407000000000" class="btn btn--bone btn--lg">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            07XXX XXX XXX
+          </a>
+          <a href="mailto:hello@whitseyandco.co.uk" class="btn btn--glass-light btn--lg">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+            hello@whitseyandco.co.uk
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Footer ── -->
+  <footer class="foot">
+    <div class="container-wide foot__inner">
+      <span class="mono-label" style="color:var(--bone-2)">© 2026 Whitsey &amp; Co. · All rights reserved</span>
+      <span class="mono-label" style="color:var(--bone-2)">
+        <a href="index.html" class="foot__back">← Back to homepage</a>
+      </span>
+    </div>
+  </footer>
+
+  <script>
+    // ── Service card data ──
+    const SERVICES = [
+      {
+        icon: "chef-hat",
+        title: "Kitchen <em>fitting</em>",
+        desc: "From Shaker to handleless. We handle the full job — breakout, first-fix plumbing and electrics, cabinetry, stone, appliances and snagging — so you're dealing with one team, not five.",
+        bullets: ["Design consult", "Cabinetry install", "Stone &amp; worktops", "Appliance fit-out"],
+        img: "gallery_images/PHOTO-2026-04-11-17-01-11 7.jpg",
+        foot: "Typically 4–8 weeks",
+      },
+      {
+        icon: "bath",
+        title: "Bathrooms &amp; <em>wet rooms</em>",
+        desc: "Fully tanked wet rooms, en-suites and family bathrooms. Watertight first — stone, glass and brassware after. We only fit what we'd put in our own homes.",
+        bullets: ["Tanking &amp; waterproofing", "Underfloor heating", "Shower &amp; bath install", "Brassware &amp; glass"],
+        img: "gallery_images/PHOTO-2026-04-11-17-01-11 9.jpg",
+        foot: "Typically 3–5 weeks",
+      },
+      {
+        icon: "tv",
+        title: "Entertainment <em>systems</em>",
+        desc: "TV walls, hidden speaker systems, media cupboards. We build with the electricians and AV specialists we've worked with for years — cable routes planned before the plaster goes up.",
+        bullets: ["Wall-mount TV builds", "In-ceiling speakers", "Cable-free installs", "Media joinery"],
+        img: "gallery_images/PHOTO-2026-04-11-17-01-10 8.jpg",
+        foot: "Typically 1–2 weeks",
+      },
+      {
+        icon: "flame",
+        title: "Fireplaces &amp; <em>wood burners</em>",
+        desc: "HETAS-registered fitters for stoves and flues. Hearth rebuilds, chimney relining, reclaimed-stone surrounds and bespoke mantels — all signed off properly and certified.",
+        bullets: ["HETAS-certified", "Chimney relining", "Hearth &amp; surround", "Wood-burner install"],
+        img: "gallery_images/PHOTO-2026-04-11-17-01-06.jpg",
+        foot: "Typically 1–3 weeks",
+      },
+      {
+        icon: "grid",
+        title: "Tiling",
+        desc: "Wall and floor tiling across stone, porcelain, ceramic and terrazzo. Proper preparation, decoupling membranes where needed, dead-level finishes — done once, done well.",
+        bullets: ["Natural stone", "Large-format porcelain", "Decoupling systems", "Precision grouting"],
+        img: "gallery_images/PHOTO-2026-04-11-17-01-07 2.jpg",
+        foot: "Typically 1–2 weeks",
+      },
+      {
+        icon: "lightbulb",
+        title: "Lighting",
+        desc: "Working with our Part-P electrician on everything from recessed downlights to statement pendants and automated circuits. Properly planned, so the switching makes sense.",
+        bullets: ["Part-P certified", "Low-voltage circuits", "Pendant &amp; feature", "Smart switching"],
+        img: "gallery_images/PHOTO-2026-04-11-17-01-12 13.jpg",
+        foot: "Typically 3–10 days",
+      },
+      {
+        icon: "trees",
+        title: "Garden <em>landscaping</em>",
+        desc: "Full garden redesigns — grading, drainage, planting beds, steps, retaining walls. We bring in our regular planting specialist for soft landscaping where it's needed.",
+        bullets: ["Levelling &amp; drainage", "Retaining walls", "Planting beds", "Turf &amp; gravel"],
+        img: "gallery_images/PHOTO-2026-04-11-17-01-06 2.jpg",
+        foot: "Typically 4–8 weeks",
+      },
+      {
+        icon: "layers",
+        title: "Patios &amp; <em>paving</em>",
+        desc: "Indian sandstone, porcelain, Cotswold stone, blockwork. Properly dug-out sub-base, compacted, drained and pointed — so the patio's still dead-level in ten years' time.",
+        bullets: ["Sandstone &amp; porcelain", "Block paving", "Stepping &amp; edging", "SuDS drainage"],
+        img: "gallery_images/PHOTO-2026-04-11-17-01-10 7.jpg",
+        foot: "Typically 2–4 weeks",
+      },
+      {
+        icon: "warehouse",
+        title: "Pergolas &amp; <em>outdoor rooms</em>",
+        desc: "Oak and cedar pergolas, covered dining rooms, garden offices, carports. Built to last in British weather — properly footed, breathable and finished to a domestic standard.",
+        bullets: ["Oak &amp; cedar frame", "Louvred roofs", "Lighting &amp; power", "Outdoor joinery"],
+        img: "gallery_images/PHOTO-2026-04-11-17-01-07.jpg",
+        foot: "Typically 2–5 weeks",
+      },
+      {
+        icon: "fence",
+        title: "Fencing &amp; <em>boundaries</em>",
+        desc: "Closeboard, featheredge, horizontal slat, post-and-rail — set in concrete on properly-depthed posts. Gates, driveway entrances and stock fencing all handled in-house.",
+        bullets: ["Closeboard &amp; slat", "Concrete post-setting", "Gates &amp; latches", "Stock &amp; post-rail"],
+        img: "gallery_images/PHOTO-2026-04-11-17-01-10 3.jpg",
+        foot: "Typically 3–10 days",
+      },
+    ];
+
+    // Icon SVG paths
+    const ICONS = {
+      "chef-hat": `<path d="M17 21a1 1 0 0 0 1-1v-5.35c0-.457.316-.844.727-1.041a4 4 0 0 0-2.134-7.589 5 5 0 0 0-9.186 0 4 4 0 0 0-2.134 7.588c.411.198.727.585.727 1.041V20a1 1 0 0 0 1 1Z"/><path d="M6 17h12"/>`,
+      "bath": `<path d="M10 4 8 6"/><path d="M17 19v2"/><path d="M2 12h20"/><path d="M7 19v2"/><path d="M9 5a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h4Z"/><path d="M4 12V6a2 2 0 1 1 4 0v6"/><path d="M20 12v5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-5"/>`,
+      "tv": `<path d="m17 2-5 5-5-5"/><rect width="20" height="15" x="2" y="7" rx="2" ry="2"/>`,
+      "flame": `<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>`,
+      "grid": `<rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 12h18"/><path d="M12 3v18"/>`,
+      "lightbulb": `<path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/>`,
+      "trees": `<path d="M10 10v.2A3 3 0 0 1 8.9 16H5a3 3 0 0 1-1-5.8V10a3 3 0 0 1 6 0Z"/><path d="M7 16v6"/><path d="M13 19h6"/><path d="M17 12v10"/><path d="M17 2a3 3 0 0 0-3 3v1.4c-.6.3-1 .9-1 1.6v.2c0 .8.6 1.5 1.4 1.6l.6.1V14h5V10l.6-.1c.8-.1 1.4-.8 1.4-1.6V8c0-.7-.4-1.3-1-1.6V5a3 3 0 0 0-3-3Z"/>`,
+      "layers": `<path d="M4 10c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h4c1.1 0 2 .9 2 2"/><path d="M10 22H6c-1.1 0-2-.9-2-2v-4c0-1.1.9-2 2-2"/><rect width="12" height="12" x="10" y="10" rx="2"/>`,
+      "warehouse": `<path d="M22 8.35V20a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8.35A2 2 0 0 1 3.26 6.5l8-3.2a2 2 0 0 1 1.48 0l8 3.2A2 2 0 0 1 22 8.35Z"/><path d="M6 18h12"/><path d="M6 14h12"/><rect width="12" height="12" x="6" y="10"/>`,
+      "fence": `<path d="M4 22V9.5a.5.5 0 0 1 .2-.4l2.6-1.8a.6.6 0 0 1 .8 0l2.8 1.9a.5.5 0 0 0 .8 0l2.8-1.9a.6.6 0 0 1 .8 0l2.8 1.9a.5.5 0 0 0 .8 0l2.6-1.8a.5.5 0 0 1 .8.4V22"/><path d="M1 22h22"/><path d="M7 13h2"/><path d="M7 17h2"/><path d="M15 13h2"/><path d="M15 17h2"/>`,
+      "arrow-up-right": `<path d="M7 7h10v10"/><path d="M7 17 17 7"/>`,
+    };
+
+    function icon(name, size) {
+      return `<svg class="icon" viewBox="0 0 24 24" width="${size||'1em'}" height="${size||'1em'}" aria-hidden="true">${ICONS[name]||''}</svg>`;
+    }
+
+    // Render cards
+    const grid = document.getElementById("sv-grid");
+    SERVICES.forEach((s, i) => {
+      const card = document.createElement("a");
+      card.className = "sv-card";
+      card.href = "#cta";
+      card.innerHTML = `
+        <div class="sv-card__img">
+          <img src="${s.img}" alt="" loading="lazy" />
+          <span class="sv-card__num">${String(i+1).padStart(2,"0")} / 10</span>
+        </div>
+        <div class="sv-card__body">
+          <div class="sv-card__icon">${icon(s.icon)}</div>
+          <h3 class="sv-card__title">${s.title}</h3>
+          <p class="sv-card__desc">${s.desc}</p>
+          <ul class="sv-card__bullets">
+            ${s.bullets.map(b => `<li>${b}</li>`).join("")}
+          </ul>
+          <div class="sv-card__foot">
+            <span class="sv-card__foot-label">${s.foot}</span>
+            <span class="sv-card__cta-icon">${icon("arrow-up-right")}</span>
+          </div>
+        </div>`;
+      grid.appendChild(card);
+    });
+
+    // Nav scroll state
+    const nav = document.getElementById("nav");
+    window.addEventListener("scroll", () => {
+      nav.classList.toggle("nav--scrolled", window.scrollY > 24);
+    }, { passive: true });
+
+    // Hamburger menu
+    const burger = document.getElementById("nav-burger");
+    function openDrawer() {
+      nav.classList.add("nav--open");
+      burger.setAttribute("aria-expanded", "true");
+      burger.setAttribute("aria-label", "Close menu");
+      document.body.style.overflow = "hidden";
+    }
+    function closeDrawer() {
+      nav.classList.remove("nav--open");
+      burger.setAttribute("aria-expanded", "false");
+      burger.setAttribute("aria-label", "Open menu");
+      document.body.style.overflow = "";
+    }
+    burger.addEventListener("click", () => {
+      nav.classList.contains("nav--open") ? closeDrawer() : openDrawer();
+    });
+    document.addEventListener("keydown", e => {
+      if (e.key === "Escape") closeDrawer();
+    });
+  </script>
+</body>
+</html>
