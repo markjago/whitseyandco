@@ -162,23 +162,29 @@
       transition: transform 0.25s ease, opacity 0.2s ease, width 0.25s ease;
       transform-origin: center;
     }
-    .nav--open .nav__burger span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
-    .nav--open .nav__burger span:nth-child(2) { opacity: 0; width: 0; }
-    .nav--open .nav__burger span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+    .menu-open .nav__burger span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .menu-open .nav__burger span:nth-child(2) { opacity: 0; width: 0; }
+    .menu-open .nav__burger span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
     /* Mobile drawer */
     .nav__drawer {
-      display: none;
-      position: fixed; inset: 0; top: 0; z-index: 90;
+      display: flex;
+      position: fixed; inset: 0; top: 0; z-index: 101;
       padding-top: 72px;
       background: var(--ink);
       flex-direction: column;
-      animation: drawerIn 0.25s cubic-bezier(0.16,1,0.3,1) forwards;
+      visibility: hidden;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s cubic-bezier(0.16,1,0.3,1), transform 0.25s cubic-bezier(0.16,1,0.3,1), visibility 0s linear 0.25s;
+      transform: translateY(-8px);
     }
-    @keyframes drawerIn {
-      from { opacity: 0; transform: translateY(-8px); }
-      to   { opacity: 1; transform: translateY(0); }
+    .menu-open .nav__drawer {
+      visibility: visible;
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0);
+      transition: opacity 0.25s cubic-bezier(0.16,1,0.3,1), transform 0.25s cubic-bezier(0.16,1,0.3,1), visibility 0s linear 0s;
     }
-    .nav--open .nav__drawer { display: flex; }
     .nav__drawer ul {
       list-style: none; margin: 0; padding: 32px var(--gutter);
       display: flex; flex-direction: column; gap: 4px;
@@ -490,25 +496,26 @@
       </div>
     </div>
 
-    <!-- Mobile drawer -->
-    <div class="nav__drawer" id="nav-drawer" role="dialog" aria-label="Navigation menu">
-      <button class="nav__drawer-close" onclick="closeDrawer()" aria-label="Close menu">
-        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
-      </button>
-      <ul>
-        <li><a href="index.html#work"    onclick="closeDrawer()">Work</a></li>
-        <li><a href="index.html#about"   onclick="closeDrawer()">About</a></li>
-        <li><a href="services.html"      onclick="closeDrawer()" aria-current="page">Services</a></li>
-        <li><a href="index.html#contact" onclick="closeDrawer()">Contact</a></li>
-      </ul>
-      <div class="nav__drawer-cta">
-        <a href="index.html#contact" class="btn btn--bone btn--lg" onclick="closeDrawer()">
-          Get a quote
-          <svg class="icon" viewBox="0 0 24 24" data-arrow aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-        </a>
-      </div>
-    </div>
   </nav>
+
+  <!-- Mobile drawer (outside <nav> so position:fixed resolves to viewport) -->
+  <div class="nav__drawer" id="nav-drawer" role="dialog" aria-label="Navigation menu">
+    <button class="nav__drawer-close" onclick="closeDrawer()" aria-label="Close menu">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+    <ul>
+      <li><a href="index.html#work"    onclick="closeDrawer()">Work</a></li>
+      <li><a href="index.html#about"   onclick="closeDrawer()">About</a></li>
+      <li><a href="services.html"      onclick="closeDrawer()" aria-current="page">Services</a></li>
+      <li><a href="index.html#contact" onclick="closeDrawer()">Contact</a></li>
+    </ul>
+    <div class="nav__drawer-cta">
+      <a href="index.html#contact" class="btn btn--bone btn--lg" onclick="closeDrawer()">
+        Get a quote
+        <svg class="icon" viewBox="0 0 24 24" data-arrow aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+      </a>
+    </div>
+  </div>
 
   <!-- ── Services hero ── -->
   <header class="sv-hero">
@@ -636,6 +643,7 @@
   <footer class="foot">
     <div class="container-wide foot__inner">
       <span class="mono-label" style="color:var(--bone-2)">© 2026 Whitsey &amp; Co. · All rights reserved</span>
+      <span class="mono-label" style="color:var(--bone-2)">Built in St Ives</span>
       <span class="mono-label" style="color:var(--bone-2)">
         <a href="index.html" class="foot__back">← Back to homepage</a>
       </span>
@@ -781,13 +789,13 @@
     // Hamburger menu
     const burger = document.getElementById("nav-burger");
     function openDrawer() {
-      nav.classList.add("nav--open");
+      document.body.classList.add("menu-open");
       burger.setAttribute("aria-expanded", "true");
       burger.setAttribute("aria-label", "Close menu");
       document.body.style.overflow = "hidden";
     }
     function closeDrawer() {
-      nav.classList.remove("nav--open");
+      document.body.classList.remove("menu-open");
       burger.setAttribute("aria-expanded", "false");
       burger.setAttribute("aria-label", "Open menu");
       document.body.style.overflow = "";
